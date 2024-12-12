@@ -26,46 +26,75 @@
 <body>
     <div id="countdown">Lädt...</div>
 
+    <!-- Firebase Integration -->
+    <script src="https://www.gstatic.com/firebasejs/10.1.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.1.0/firebase-database-compat.js"></script>
+
     <script>
-        async function loadGameData() {
+        const firebaseConfig = {
+            apiKey: "AIzaSyCFhS0aAgq0RQdgncI1lD1adbyVHGDgmcI",
+            authDomain: "videowand-43140.firebaseapp.com",
+            databaseURL: "https://videowand-43140-default-rtdb.europe-west1.firebasedatabase.app/",
+            projectId: "videowand-43140",
+            storageBucket: "videowand-43140.appspot.com",
+            messagingSenderId: "777250256351",
+            appId: "1:777250256351:web:f0700b48c645037c82006a"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        async function loadActiveGame() {
             try {
-                // Lade die Daten aus der TXT-Datei
-                const response = await fetch('http://localhost/anzeige/pregame.php');
-                const data = await response.json();
-                startCountdown(data);
+                // Hole die ID des aktiven Spiels aus der Datenbank
+                const activeGameSnapshot = await database.ref("stadiums/activeGame").once("value");
+                const activeGameId = activeGameSnapshot.val();
+
+                if (!activeGameId) {
+                    document.getElementById("countdown").innerText = "Kein aktives Spiel.";
+                    return;
+                }
+
+                // Hole die Daten des aktiven Spiels aus der Datenbank
+                const gameSnapshot = await database.ref(`stadiums/${activeGameId}`).once("value");
+                const gameData = gameSnapshot.val();
+
+                if (!gameData || !gameData.gameTime) {
+                    document.getElementById("countdown").innerText = "Keine gültige Anspielzeit verfügbar.";
+                    return;
+                }
+
+                startCountdown(gameData.gameTime);
             } catch (error) {
-                console.error('Fehler beim Laden der Daten:', error);
-                document.getElementById('countdown').innerText = 'Fehler beim Laden der Spieldaten.';
+                console.error('Fehler beim Laden der Spieldaten:', error);
+                document.getElementById("countdown").innerText = 'Fehler beim Laden der Spieldaten.';
             }
         }
 
-        function startCountdown(data) {
-            const gameDate = new Date(data.todayGame.date);
-            const [hours, minutes] = data.todayGame.time.split(':').map(Number);
-            gameDate.setHours(hours, minutes, 0);
-
-            // Deklariere die Variable "interval" hier
-            let interval;
+        function startCountdown(gameTime) {
+            const gameDate = new Date(gameTime);
 
             function updateCountdown() {
                 const now = new Date();
                 const timeDifference = gameDate - now;
+
                 if (timeDifference <= 0) {
-                    clearInterval(countdownInterval);
+                    clearInterval(interval);
                     return;
                 }
+
                 const hoursRemaining = Math.floor((timeDifference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
                 const minutesRemaining = Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60));
                 const secondsRemaining = Math.floor((timeDifference % (1000 * 60)) / 1000);
-                document.getElementById('countdown').innerText = `${hoursRemaining.toString().padStart(2, '0')}:${minutesRemaining.toString().padStart(2, '0')}:${secondsRemaining.toString().padStart(2, '0')}`;
+                document.getElementById("countdown").innerText = `${hoursRemaining.toString().padStart(2, '0')}:${minutesRemaining.toString().padStart(2, '0')}:${secondsRemaining.toString().padStart(2, '0')}`;
             }
 
             updateCountdown();
-            interval = setInterval(updateCountdown, 1000); // "interval" wird initialisiert
+            const interval = setInterval(updateCountdown, 1000);
         }
 
-        // Daten laden und Countdown starten
-        loadGameData();
+        // Lade das aktive Spiel und starte den Countdown
+        loadActiveGame();
     </script>
 </body>
 
