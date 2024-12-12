@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Scores</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: black;
+            color: white;
+            margin: 0;
+            padding: 0;
+        }
+
+        #livescore {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+            width: 100%;
+            max-width: 1500px;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .game-card {
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            background-color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 600px;
+            height: auto;
+        }
+
+        .game-card>div:first-child {
+            display: flex;
+            align-items: center;
+            justify-content: space-evenly;
+            width: 100%;
+        }
+
+        .team-logo {
+            width: 125px;
+            height: 125px;
+        }
+
+        .team-score {
+            font-size: 35px;
+            color: black;
+        }
+
+        .score-details {
+            font-size: 30px;
+            color: #323232;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="livescore">Lädt...</div>
+
+    <!-- Firebase Integration -->
+    <script src="https://www.gstatic.com/firebasejs/10.1.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.1.0/firebase-database-compat.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyCFhS0aAgq0RQdgncI1lD1adbyVHGDgmcI",
+            authDomain: "videowand-43140.firebaseapp.com",
+            databaseURL: "https://videowand-43140-default-rtdb.europe-west1.firebasedatabase.app/",
+            projectId: "videowand-43140",
+            storageBucket: "videowand-43140.appspot.com",
+            messagingSenderId: "777250256351",
+            appId: "1:777250256351:web:f0700b48c645037c82006a"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        async function loadGames() {
+            try {
+                const gamesSnapshot = await database.ref('stadiums').once('value');
+                const gamesData = gamesSnapshot.val();
+
+                if (!gamesData) {
+                    document.getElementById("livescore").innerText = "Keine aktiven Spiele verfügbar.";
+                    return;
+                }
+
+                const livescoreContainer = document.getElementById("livescore");
+                livescoreContainer.innerHTML = '';
+
+                const now = new Date();
+
+                const gamesArray = Object.keys(gamesData).map((gameId) => ({
+                    id: gameId,
+                    ...gamesData[gameId]
+                }));
+
+                gamesArray.sort((a, b) => {
+                    const timeA = new Date(a.gameTime);
+                    const timeB = new Date(b.gameTime);
+
+                    if (timeA <= now && timeB > now) return -1;
+                    if (timeA > now && timeB <= now) return 1;
+
+                    return timeA - timeB;
+                });
+
+                for (const game of gamesArray) {
+                    if (game && game.gameTime && game.home && game.away) {
+                        const gameTime = new Date(game.gameTime);
+                        const homeTeam = game.home.name || "Heim";
+                        const awayTeam = game.away.name || "Gast";
+                        const homeScore = game.home.score || 0;
+                        const awayScore = game.away.score || 0;
+                        const homeLogo = game.home.logo || '';
+                        const awayLogo = game.away.logo || '';
+
+                        const formattedTime = `${gameTime.getHours()}:${String(gameTime.getMinutes()).padStart(2, '0')} Uhr`;
+
+                        const gameStatus = gameTime >= now
+                            ? formattedTime
+                            : game.periode || "Unbekannte Periode";
+
+                        const gameElement = document.createElement("div");
+                        gameElement.classList.add("game-card");
+
+                        gameElement.innerHTML = `
+                    <div style="display: flex; align-items: center; justify-content: space-evenly; width: 100%;">
+                        <img src="${homeLogo}" class="team-logo" alt="${homeTeam} Logo">
+                        <div class="team-score">${homeScore} - ${awayScore}</div>
+                        <img src="${awayLogo}" class="team-logo" alt="${awayTeam} Logo">
+                    </div>
+                    <div class="score-details">${gameStatus}</div>
+                `;
+
+                        livescoreContainer.appendChild(gameElement);
+                    }
+                }
+            } catch (error) {
+                console.error('Fehler beim Laden der Spieldaten:', error);
+                document.getElementById("livescore").innerText = "Fehler beim Laden der Spieldaten.";
+            }
+        }
+
+        setInterval(loadGames, 10000);
+
+        loadGames();
+    </script>
+</body>
+
+</html>
