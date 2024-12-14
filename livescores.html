@@ -36,7 +36,7 @@
             text-align: center;
             background-color: white;
             display: flex;
-            flex-direction: column;
+            flex-direction: row;
             justify-content: center;
             align-items: center;
             width: 600px;
@@ -56,14 +56,14 @@
         }
 
         .team-score {
-            font-size: 50px;
+            font-size: 80px;
             color: black;
         }
 
         .score-details {
-            font-size: 30px;
+            font-size: 45px;
             color: #323232;
-            margin-top: 10px;
+            margin-top: 5px;
         }
     </style>
 </head>
@@ -139,12 +139,12 @@
                         gameElement.classList.add("game-card");
 
                         gameElement.innerHTML = `
-                    <div style="display: flex; align-items: center; justify-content: space-evenly; width: 100%;">
-                        <img src="${homeLogo}" class="team-logo" alt="${homeTeam} Logo">
+<img src="${homeLogo}" class="team-logo" alt="${homeTeam} Logo">
+                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: space-evenly; width: 100%;">
                         <div class="team-score">${homeScore} - ${awayScore}</div>
-                        <img src="${awayLogo}" class="team-logo" alt="${awayTeam} Logo">
+                  <div class="score-details">${gameStatus}</div>
                     </div>
-                    <div class="score-details">${gameStatus}</div>
+<img src="${awayLogo}" class="team-logo" alt="${awayTeam} Logo">
                 `;
 
                         livescoreContainer.appendChild(gameElement);
