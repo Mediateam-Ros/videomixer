@@ -13,10 +13,21 @@
         }
 
         #countdown {
-            font-size: 60px;
+            font-size: 200px;
             color: white;
             position: fixed;
-            top: 67%;
+            font-weight: bold;
+            top: 90%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        p {
+            font-size: 60px;
+            font-style: italic;
+            color: white;
+            position: fixed;
+            top: 72%;
             left: 50%;
             transform: translate(-50%, -50%);
         }
@@ -24,9 +35,8 @@
 </head>
 
 <body>
+    <p>Countdown bis zum Spiel:</p>
     <div id="countdown">Lädt...</div>
-
-    <!-- Firebase Integration -->
     <script src="https://www.gstatic.com/firebasejs/10.1.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.1.0/firebase-database-compat.js"></script>
 
@@ -60,14 +70,14 @@
                 const gameData = gameSnapshot.val();
 
                 if (!gameData || !gameData.gameTime) {
-                    document.getElementById("countdown").innerText = "Keine gültige Anspielzeit verfügbar.";
+                    document.getElementById("countdown").innerText = "";
                     return;
                 }
 
                 startCountdown(gameData.gameTime);
             } catch (error) {
                 console.error('Fehler beim Laden der Spieldaten:', error);
-                document.getElementById("countdown").innerText = 'Fehler beim Laden der Spieldaten.';
+                document.getElementById("countdown").innerText = 'Fehler';
             }
         }
 
