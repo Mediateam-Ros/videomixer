@@ -27,7 +27,7 @@
             color: white;
             position: fixed;
             top: 40%;
-            left: 62%;
+            left: 64%;
             transform: translate(-50%, -50%);
         }
 
@@ -82,7 +82,7 @@
                 case "2. Pause":
                 case "Endstand":
                     return "";
-                default: return period || "Unbekannt";
+                default: return period || "";
             }
         }
 
@@ -94,7 +94,7 @@
                 if (!activeGameId) {
                     document.getElementById('homeScore').innerText = '0';
                     document.getElementById('awayScore').innerText = '0';
-                    document.getElementById('third').innerText = 'Kein aktives Spiel';
+                    document.getElementById('third').innerText = '';
                     return;
                 }
 
@@ -113,14 +113,14 @@
                     } else {
                         document.getElementById('homeScore').innerText = '0';
                         document.getElementById('awayScore').innerText = '0';
-                        document.getElementById('third').innerText = 'Keine Spieldaten verfügbar';
+                        document.getElementById('third').innerText = '';
                     }
                 });
             } catch (error) {
                 console.error('Fehler beim Laden der Spieldaten:', error);
                 document.getElementById('homeScore').innerText = '0';
                 document.getElementById('awayScore').innerText = '0';
-                document.getElementById('third').innerText = 'Fehler beim Laden';
+                document.getElementById('third').innerText = 'Fehler';
             }
         }
 
