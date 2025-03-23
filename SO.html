@@ -13,29 +13,11 @@
             color: white;
         }
 
-        #homeScore {
-            font-size: 150px;
-            color: white;
-            position: fixed;
-            top: 40%;
-            left: 38%;
-            transform: translate(-50%, -50%);
-        }
-
-        #awayScore {
-            font-size: 150px;
-            color: white;
-            position: fixed;
-            top: 40%;
-            left: 62%;
-            transform: translate(-50%, -50%);
-        }
-
         #third {
-            font-size: 65px;
+            font-size: 150px;
             color: white;
             position: fixed;
-            top: 7%;
+            top: 8%;
             left: 50%;
             transform: translate(-50%, -50%);
         }
@@ -46,26 +28,26 @@
         }
 
         .shootout-dot {
-            width: 65px;
-            height: 65px;
+            width: 175px;
+            height: 175px;
             display: inline-block;
             border-radius: 50%;
             margin: 0 30px;
             z-index: 10;
-            border: 2px solid white;
+            border: 10px solid white;
         }
 
         #homeShootoutResults {
             position: fixed;
-            top: 20%;
-            left: 25%;
+            top: 27%;
+            left: 30%;
             z-index: 10;
         }
 
         #awayShootoutResults {
             position: fixed;
-            top: 45%;
-            left: 25%;
+            top: 60%;
+            left: 30%;
             z-index: 10;
         }
     </style>
@@ -106,7 +88,7 @@
                 case "2. Pause":
                 case "Endstand":
                     return "";
-                default: return period || "Unbekannt";
+                default: return period || "";
             }
         }
 
@@ -116,7 +98,7 @@
                 const activeGameId = activeGameSnapshot.val();
 
                 if (!activeGameId) {
-                    document.getElementById('third').innerText = 'Kein aktives Spiel';
+                    document.getElementById('third').innerText = '';
                     return;
                 }
 
@@ -157,12 +139,12 @@
                             document.getElementById('awayShootoutResults').appendChild(awayDot);
                         }
                     } else {
-                        document.getElementById('third').innerText = 'Keine Spieldaten verfügbar';
+                        document.getElementById('third').innerText = '';
                     }
                 });
             } catch (error) {
                 console.error('Fehler beim Laden der Spieldaten:', error);
-                document.getElementById('third').innerText = 'Fehler beim Laden';
+                document.getElementById('third').innerText = 'Fehler';
             }
         }
 
