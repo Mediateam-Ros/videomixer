@@ -78,10 +78,9 @@
                 case "3. Drittel": return "3/3";
                 case "Overtime": return "OT";
                 case "Penaltyschießen": return "SO";
-                case "1. Pause":
-                case "2. Pause":
-                case "Endstand":
-                    return "";
+                case "1. Pause": return "1. Pause";
+                case "2. Pause": return "2. Pause";
+                case "Endstand": return "";
                 default: return period || "";
             }
         }
